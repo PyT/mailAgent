@@ -1,0 +1,4 @@
+# Dépôt d'add-ons Home Assistant : à ajouter dans Paramètres → Modules complémentaires → Boutique → ⋮ → Dépôts
+name: mailAgent
+url: https://github.com/PyT/mailAgent
+maintainer: PyT

@@ -1,0 +1,7 @@
+configuration:
+  gemini_api_key:
+    name: Clé API Gemini
+    description: À créer gratuitement sur https://aistudio.google.com/apikey
+  log_level:
+    name: Niveau de journalisation
+    description: Détail des journaux de l'add-on (info par défaut).

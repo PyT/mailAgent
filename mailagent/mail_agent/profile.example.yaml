@@ -1,0 +1,53 @@
+# Configuration de Mail Agent. Dans l'add-on Home Assistant, elle se modifie depuis
+# l'onglet « Réglages » du panneau ; en local, copie ce fichier en config/profile.yaml.
+
+llm:
+  provider: gemini
+  model: gemini-3.5-flash-lite   # rapide, gros quota gratuit ; essaie gemini-3.8-flash si la qualité ne suffit pas
+  batch_size: 15                 # nb de mails classés par requête (économise le quota gratuit)
+
+# Décris-toi en langage naturel : le LLM lit ce texte pour décider.
+profile: |
+  Je suis un particulier en France. Ce qui est IMPORTANT pour moi :
+  - les mails de vraies personnes qui m'écrivent directement
+  - administration (impôts, CAF, sécu, mairie), banque, assurance, santé, logement
+  - factures, contrats, échéances, rendez-vous, tout ce qui demande une action de ma part
+  - la sécurité de mes comptes (connexion suspecte, changement de mot de passe)
+  Ce qui NE m'intéresse PAS :
+  - les promotions, soldes, codes promo, même de marques que je connais
+  - les newsletters que je ne lis jamais
+  - les notifications de réseaux sociaux
+
+rules:
+  # Règles appliquées AVANT le LLM (gratuites et instantanées), une liste par catégorie :
+  # important_senders, personnel_senders, transactionnel_senders, notification_senders,
+  # newsletter_senders, promo_senders, spam_senders.
+  # Formats : "@domaine.fr" (et sous-domaines), "adresse@exacte.fr", "name:Nom affiché".
+  important_senders: []
+  promo_senders: []
+  notification_senders: []
+  # Classés "important" par règle et JAMAIS envoyés au LLM (confidentialité)
+  private_senders: []
+
+gmail:
+  # Valeurs par défaut, utilisées par tous les comptes
+  query: "in:inbox newer_than:3d"   # syntaxe de recherche Gmail
+  max_messages: 100
+  label_prefix: "IA"                # labels créés : IA/Important, IA/Promo, ...
+
+# Les comptes à surveiller. Chaque compte peut surcharger query, max_messages,
+# label_prefix et profile.
+accounts:
+  - email: prenom.nom@gmail.com
+
+# Analyse automatique quotidienne : labels + bruit (promo, newsletter,
+# notification, spam) marqué comme lu, puis récap sur le téléphone.
+schedule:
+  enabled: false
+  time: "07:30"
+
+notifications:
+  service: ""        # service notify de HA, ex. mobile_app_mon_telephone (vide = pas de récap)
+
+usage:
+  daily_token_alert: 500000   # alerte si la consommation du jour dépasse ce seuil (0 = désactivé)

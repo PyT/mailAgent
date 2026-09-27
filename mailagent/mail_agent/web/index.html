@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mail Agent</title>
+  <!-- Chemins RELATIFS : le panneau est servi sous /api/hassio_ingress/<jeton>/ -->
+  <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">✉</span>
+      <div>
+        <h1>Mail Agent</h1>
+        <p class="sub" id="auto-summary">…</p>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn" data-analyze="preview" title="Classe les nouveaux mails sans rien modifier dans Gmail">Analyser (aperçu)</button>
+      <button class="btn primary" data-analyze="apply" title="Classe puis pose les labels et marque le bruit comme lu">Analyser et appliquer</button>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" data-tab="home" class="active">Accueil</button>
+    <button role="tab" data-tab="preview">Aperçu du tri</button>
+    <button role="tab" data-tab="usage">Consommation</button>
+    <button role="tab" data-tab="settings">Réglages</button>
+    <button role="tab" data-tab="accounts">Comptes</button>
+  </nav>
+
+  <div id="running" class="banner info" hidden>
+    <span class="spinner" aria-hidden="true"></span>
+    <span>Analyse en cours… Les résultats s'afficheront automatiquement.</span>
+  </div>
+  <div id="alerts"></div>
+
+  <main>
+    <section id="tab-home" class="tab active"></section>
+    <section id="tab-preview" class="tab"></section>
+    <section id="tab-usage" class="tab"></section>
+    <section id="tab-settings" class="tab"></section>
+    <section id="tab-accounts" class="tab"></section>
+  </main>
+
+  <div id="toast" class="toast" hidden></div>
+  <script src="static/app.js"></script>
+</body>
+</html>

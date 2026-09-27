@@ -1,0 +1,7 @@
+configuration:
+  gemini_api_key:
+    name: Gemini API key
+    description: Create one for free at https://aistudio.google.com/apikey
+  log_level:
+    name: Log level
+    description: Add-on log verbosity (default info).

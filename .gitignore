@@ -1,0 +1,11 @@
+# Secrets : ne jamais commiter
+.env
+credentials*.json
+tokens/
+config/profile.yaml
+
+# Données locales
+data/
+.venv/
+__pycache__/
+*.pyc
