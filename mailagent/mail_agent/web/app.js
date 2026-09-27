@@ -749,7 +749,7 @@ async function loadAccounts() {
   root.replaceChildren(
     credCard,
     el("h2", { style: "margin:24px 0 12px" }, "2. Comptes Gmail"),
-    data.accounts.length ? accountCards : el("p", { class: "empty" }, "Aucun compte : ajoute-les dans l'onglet Réglages."),
+    ...(data.accounts.length ? accountCards : [el("p", { class: "empty" }, "Aucun compte : ajoute-les dans l'onglet Réglages.")]),
     el("div", { class: "card" },
       el("h3", {}, "Bon à savoir"),
       el("ul", { class: "legend", style: "padding-left:18px;margin:8px 0 0" },
