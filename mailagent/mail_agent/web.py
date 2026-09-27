@@ -15,8 +15,7 @@ from typing import Any, Optional
 
 import yaml
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse, JSONResponse, PlainTextResponse
-from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, PlainTextResponse
 from pydantic import BaseModel
 
 from . import ha, store
@@ -54,19 +53,34 @@ async def busy_handler(request: Request, exc: Busy):
 # --- Page ------------------------------------------------------------------------
 
 
+ASSETS = {"app.js": "application/javascript", "style.css": "text/css"}
+
+
+def asset_version(name: str) -> str:
+    return hashlib.sha256((WEB_DIR / name).read_bytes()).hexdigest()[:12]
+
+
 @app.get("/")
 def index():
-    """La page référence les fichiers statiques avec une empreinte de leur contenu
-    (static/app.js?v=…) : après une mise à jour de l'add-on, le navigateur ne peut
-    pas réutiliser une ancienne version gardée en cache."""
+    """La page référence ses fichiers avec une empreinte de leur contenu DANS LE
+    CHEMIN (assets/<empreinte>/app.js). Un simple « ?v=… » ne suffit pas : certains
+    relais HTTP (ex. l'accès distant Freebox) mettent en cache en ignorant la
+    partie « ?… » et resserviraient l'ancienne version après une mise à jour."""
     html = (WEB_DIR / "index.html").read_text(encoding="utf-8")
-    for name in ("app.js", "style.css"):
-        digest = hashlib.sha256((WEB_DIR / name).read_bytes()).hexdigest()[:12]
-        html = html.replace(f'"static/{name}"', f'"static/{name}?v={digest}"')
+    for name in ASSETS:
+        html = html.replace(f'"static/{name}"', f'"assets/{asset_version(name)}/{name}"')
     return HTMLResponse(html, headers={"Cache-Control": "no-cache"})
 
 
-app.mount("/static", StaticFiles(directory=WEB_DIR), name="static")
+@app.get("/assets/{version}/{name}")
+def asset(version: str, name: str):
+    if name not in ASSETS:
+        raise HTTPException(404)
+    # Adresse propre à ce contenu : peut être gardée en cache indéfiniment
+    return FileResponse(
+        WEB_DIR / name, media_type=ASSETS[name],
+        headers={"Cache-Control": "public, max-age=31536000, immutable"},
+    )
 
 
 # --- État & analyses ------------------------------------------------------------
