@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.2
+
+- Correction : après une mise à jour, le panneau pouvait continuer à utiliser l'ancienne
+  version gardée en cache par le navigateur.
+
 ## 0.1.1
 
 - Correction : l'onglet Comptes n'affichait pas les comptes (boutons « Connecter » absents).

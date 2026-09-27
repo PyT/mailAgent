@@ -8,13 +8,14 @@ l'utilisateur puis relaie les requêtes vers l'add-on sous une URL du type
 """
 from __future__ import annotations
 
+import hashlib
 import logging
 from pathlib import Path
 from typing import Any, Optional
 
 import yaml
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse
+from fastapi.responses import HTMLResponse, JSONResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -55,7 +56,14 @@ async def busy_handler(request: Request, exc: Busy):
 
 @app.get("/")
 def index():
-    return FileResponse(WEB_DIR / "index.html", headers={"Cache-Control": "no-cache"})
+    """La page référence les fichiers statiques avec une empreinte de leur contenu
+    (static/app.js?v=…) : après une mise à jour de l'add-on, le navigateur ne peut
+    pas réutiliser une ancienne version gardée en cache."""
+    html = (WEB_DIR / "index.html").read_text(encoding="utf-8")
+    for name in ("app.js", "style.css"):
+        digest = hashlib.sha256((WEB_DIR / name).read_bytes()).hexdigest()[:12]
+        html = html.replace(f'"static/{name}"', f'"static/{name}?v={digest}"')
+    return HTMLResponse(html, headers={"Cache-Control": "no-cache"})
 
 
 app.mount("/static", StaticFiles(directory=WEB_DIR), name="static")
